@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <script defer>
+        function getLocation() {
+            if (navigator.geolocation) { // GPS를 지원하면
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    alert(position.coords.latitude + ' ' + position.coords.longitude);
+                }, function (error) {
+                    console.error(error);
+                }, {
+                    enableHighAccuracy: false,
+                    maximumAge: 0,
+                    timeout: Infinity
+                });
+            } else {
+                alert('GPS를 지원하지 않습니다');
+            }
+        }
+        $(document).ready(function () {
+            getLocation();
+        });
+    </script>
+    <!-- 거리 측정 : 
+        현재 좌표와 장소좌표의 소수점을 6자리로 반올림
+        
+        가로길이 =  절댓값(현재 x좌표-장소 x좌표)*10000
+        세로길이 =  절댓값(현재 y좌표- 장소 y좌표)*10000
+        
+        제곱덧셈 = 가로제곱 + 세로제곱
+        
+        거리 = 제곱근(제곱덧셈) >> 다시 소수점 6자리로맞추기
+        거리 = 거리 * x 9.067133 
+    -->
+
+    <!-- 
+        330.78m
+        37.481413775008456, 126.6490094310702
+        37.48141615482041, 126.65277583340668
+        ----------------------------------------
+        37.481414, 126.649009
+        37.481416, 126.652776
+        -----------------------
+        0.000002, 0.003767  x10000
+        ----------------------------
+        0.02, 37.67
+        --------------------
+        0.0004 + 1,419.0289
+        --------------------
+        1,419.0293 >> 제곱근
+        ----------------------
+        37.670005309264292695947309580599
+        반올림 >> 37.670005
+        x 9.067133
+        = 341.558945445665
+
+        341.558945m 
+
+    -->
+    <!--
+        
+        Spatial Index로 성능 최적화 하기
+        >> 좌표를 중심으로 원을 그려서 그 원안에 있는 좌표를 조회
+        mysql에 있었음
+        
+        oracle에도 사용가능한지
+        
+    -->
+    
+
+</body>
+
+</html>
