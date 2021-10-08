@@ -13,10 +13,9 @@
     <!--reset.css (css 초기화)-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css">
     
-    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	64d6e725e286fedd8e4a806ec1c57025&libraries=services"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath }/resources/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="${pageContext.request.contextPath }/resources/js/bootstrap.min.js"></script>
     
     <style>
@@ -55,6 +54,9 @@
         .navbar>.container-fluid>.navbar-header>button>span:last-child {
             margin-bottom: 0px;
         }
+        #geoLink{
+        	cursor: pointer;
+        }
     </style>
 
 </head>
@@ -82,54 +84,49 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <!-- Link 메뉴 (class가 active가 포함되어 있기 때문에 선택된 메뉴 뜻) -->
-                    <li>
-                        <a href="<c:url value='/placeBoard/placeList' />">함께 운동해요 <span class="sr-only">(current)</span></a>
-                    </li>
-                    <!-- Link 메뉴 -->
-                    <li><a href='<c:url value='/courseBoard/' />'>운동강의</a></li>
-                    <li><a href="<c:url value='/dietBoard/dietList' />">오늘먹은식단</a></li>
-                    <li><a href="<c:url value='/noticeBoard/' />">게시판</a></li>
-                    <li><a href="<c:url value='/marketBoard/market_board' />">장터</a></li>
+                    <li><a id="menuPlace" href="<c:url value='/placeBoard/placeList' />">장소찾기 </a></li>
+                    <li><a id="menuCourse" href='<c:url value='/courseBoard/?category=' />'>운동강의</a></li>
+                    <li><a id="menuDiet" href="<c:url value='/dietBoard/dietList' />">오늘의 식단</a></li>
+                    <li><a id="menuMarket" href="<c:url value='/marketBoard/market_board' />">장터</a></li>
+                    <li><a id="menuNotice" href="<c:url value='/noticeBoard/' />">공지사항</a></li>
+                    <li><a id="menuFree" href="<c:url value='/freeBoard/' />">자유게시판</a></li>
                 </ul>
 
                 <!-- 오른쪽 정렬의 메뉴 -->
                 <ul class="nav navbar-nav navbar-right">
                     <!-- Link 메뉴 -->
 
-                     <!-- 로그인 했을경우 -->
-                     <c:if test="${loginuser != null }">
                     
-	                    <li class="dropdown">
+                    <li class="dropdown">
+                    	<c:if test="${loginuser == null }">
+	                    	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+	                            aria-expanded="false">로그인하기 <span class="caret"></span></a>
+	                    </c:if>
+                        <c:if test="${loginuser != null }">
 	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
 	                            aria-expanded="false">${loginuser.memberNick }님 <span class="caret"></span></a>
-	                        <ul class="dropdown-menu">
-	                            <li><a href="#"><span class="glyphicon glyphicon-map-marker"
-	                                        aria-hidden="true">&nbsp;대흥동</span></a></li>
-	                            <li role="separator" class="divider"></li>
-	                            <li><a href="/FRONT/views/board/user/mypage.html"><span class="glyphicon glyphicon-pencil"
-	                                        aria-hidden="true">&nbsp;마이페이지</span></a></li>
-	                            <li><a href="#"><span class="glyphicon glyphicon-log-out"
+	                    </c:if>
+                        <ul class="dropdown-menu">
+                            <li><a id="geoLink"><span id="centerAddr" class="glyphicon glyphicon-map-marker"
+                                        aria-hidden="true">${loginuser.memberLatitude==null||loginuser.memberLatitude==0.0? '내위치 추가':loginuser.memberLatitude }</span></a></li>
+                            <li role="separator" class="divider"></li>
+                    		 
+	                     	<c:if test="${loginuser != null }">
+	                            <li><a><span class="glyphicon glyphicon-pencil"
+	                                        aria-hidden="true" data-toggle="modal" data-target="#modal-infochange">&nbsp;회원정보변경</span></a></li>
+	                            <li><a href="<c:url value='/user/logout'/>"><span class="glyphicon glyphicon-log-out"
 	                                        aria-hidden="true">&nbsp;로그아웃</span></a></li>
-	                        </ul>
-	                    </li>
-                    </c:if>
-                    <!-- 로그인을 안했을 경우 -->
-                    <c:if test="${loginuser == null }">
-	                    <li class="dropdown">
-	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-	                            aria-expanded="false">로그인하기 <span class="caret"></span></a>
-	                        <ul class="dropdown-menu">
-	                            <li><a href="#"><span class="glyphicon glyphicon-remove"
-	                                        aria-hidden="true">&nbsp;위치정보없음</span></a></li>
-	                            <li role="separator" class="divider"></li>
+	                    	</c:if>
+		                    <c:if test="${loginuser == null }">
 	                            <li><a href="#" data-toggle="modal" data-target="#modal-login"><span class="glyphicon glyphicon-pencil"
 	                                        aria-hidden="true">&nbsp;로그인</span></a></li>
 	                            <li><a href="#"><span class="glyphicon glyphicon-log-out"
 	                                        aria-hidden="true" data-toggle="modal" data-target="#modal-join">&nbsp;회원가입</span></a></li>
-	                        </ul>
-	                    </li>
+		                    </c:if>
+                        </ul>
+                    </li>
+                  
                     
-                    </c:if>
                 </ul>
             </div>
         </div>
@@ -303,12 +300,12 @@
                     <h4 class="modal-title" id="myModalLabel">비밀번호찾기</h4>
                 </div>
                 <div class="modal-body">
-                    <form action="" method="post" id="form-join" class="form-horizontal">
+                    <form action="" method="post" id="form-passwdSearch" class="form-horizontal">
                        
                         <div class="form-group">
                             <label for="input-email" class="col-sm-3 control-label">이메일</label>
                             <div class="col-sm-9">
-                                <input type="email" class="form-control" id="input-email" placeholder="이메일을 입력해주세요">
+                                <input type="email" class="form-control" id="input-email-search" placeholder="이메일을 입력해주세요">
                             </div>
                            
                         </div>
@@ -319,7 +316,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info" data-dismiss="modal">인증메일 발송</button>
+                    <button id="mailSendBtn" type="button" class="btn btn-info" data-dismiss="modal">인증메일 발송</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
                 </div>
 
@@ -328,6 +325,70 @@
         </div>
     </div>
 
+	<!-- Modal 회원정보변경 모달창 -->
+    <div id="modal-infochange" class="modal fade">
+        <div class="modal-dialog">
+
+            <!-- Modal Content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">회원정보변경</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post" id="form-infoChange" class="form-horizontal">
+                        
+                        <div class="form-group">
+                            <label for="input-email" class="col-sm-3 control-label">이메일</label>
+                            <div class="col-sm-9">
+                                <input name="memberEmail" type="email" class="form-control" id="info-email" readonly value="${loginuser.memberEmail }">
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label for="input-nick" class="col-sm-3 control-label">닉네임</label>
+                            <div class="col-sm-9">
+                                <input name="memberNick" type="text" class="form-control" id="info-nick" placeholder="닉네임을 입력해주세요" value="${loginuser.memberNick }">
+                            </div>
+                           
+                            
+                        </div>
+                        <div class="form-group">
+                            <label for="input-password" class="col-sm-3 control-label">비밀번호</label>
+                            <div class="col-sm-9">
+                                <input name="memberPasswd" type="password" class="form-control" id="info-password" placeholder="비밀번호를 입력해주세요">
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label for="input-passwordchk" class="col-sm-3 control-label">비밀번호확인</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" id="info-passwordchk" placeholder="비밀번호를 확인해주세요">
+                            </div>
+                            
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-phone" class="col-sm-3 control-label">핸드폰 번호</label>
+                            <div class="col-sm-9">
+                                <input name="memberPhone" type="text" class="form-control" id="info-phone" placeholder="'-'빼고 입력해주세요" value="${loginuser.memberPhone }">
+                            </div>
+                            
+                        </div>
+
+                        
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="infoChangeBtn">정보변경</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="delUserBtn">탈퇴하기</button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
     <script defer>
 		
 		// 비밀번호 규칙 정규식
@@ -339,12 +400,26 @@
 		// 핸드폰 정규표현식
 		const regExpPhone = /^[0-9]*$/;
         /*부트스트랩 jquery*/
-        $(document).ready(function () {
+        
+        if(window.location.pathname.indexOf("/placeBoard") !== -1){
+       		$('#menuPlace').css("color","black").css("font-size","23px");
+       	} else if(window.location.pathname.indexOf("/courseBoard") !== -1){
+       		$('#menuCourse').css("color","black").css("font-size","23px");
+       	} else if(window.location.pathname.indexOf("/dietBoard") !== -1){
+       		$('#menuDiet').css("color","black").css("font-size","23px");
+       	} else if(window.location.pathname.indexOf("/noticeBoard") !== -1){
+       		$('#menuNotice').css("color","black").css("font-size","23px");
+       	} else if(window.location.pathname.indexOf("/marketBoard") !== -1){
+       		$('#menuMarket').css("color","black").css("font-size","23px");
+       	} else if(window.location.pathname.indexOf("/freeBoard") !== -1){
+       		$('#menuFree').css("color","black").css("font-size","23px");
+       	} 
+        $(document).ready(function () { 
+        	 
         	
         	
             menuBarLocation();
             $(window).resize(function () {
-                console.log($(window).width())
                 menuBarLocation();
             });
 
@@ -407,6 +482,9 @@
             		alert('닉네임을 입력해주세요');
             		return;
             		
+            	} else if($('#join-nick').val().length > 8){
+            		alert('닉네임은 최대 8자 입니다.');
+            		return;
             	}
 				
             	$.ajax({
@@ -496,7 +574,16 @@
             		$('#form-login').submit();
             	}
             }); // 로그인 클릭 이벤트
-            
+            $('#login-email').keydown(function(e){
+            	if(e.keyCode==13){
+            		$('#loginBtn').click();
+            	}
+            });
+            $('#login-password').keydown(function(e){
+            	if(e.keyCode==13){
+            		$('#loginBtn').click();
+            	}
+            });
 
         });
         function menuBarLocation(){
@@ -509,10 +596,186 @@
             }
         }
             
+        function getLocation() {
+        	const loginEmail = '${loginuser!=null? loginuser.memberEmail: "" }'
+        	if(loginEmail == ""){
+        		alert('로그인 후 이용해주세요');
+        		return;
+        	} else if (navigator.geolocation) { // GPS를 지원하면
+                navigator.geolocation.getCurrentPosition(function (position) {
+                	$.ajax({
+                        type: "POST",
+                        url: "<c:url value='/user/geoRegist' />",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        dataType: "text", //서버로부터 어떤 형식으로 받을지(생략가능)
+                        data: JSON.stringify({
+                        	"memberEmail" : loginEmail,
+                            "memberLatitude" : position.coords.latitude,
+                            "memberLongitude" : position.coords.longitude,
+                        }),
+                        success: function (data) {
+                            console.log('통신성공!' + data);
 
+                          	if(data==="success"){
+                          		alert("위치가 등록 되었습니다.");
+                          		location.reload();
+                          	} else{
+                          		alert('위치 등록에 실패했습니다.');
+                          	}
+                        },
+                        error: function () {
+                            alert('통신에 실패했습니다. 관리자에게 문의하세요');
+                        }
+                    }); // 회원 위치정보 등록 비동기 처리 끝
+                	
+                }, function (error) {
+                    console.error(error);
+                }, {
+                    enableHighAccuracy: false,
+                    maximumAge: 0,
+                    timeout: Infinity
+                });
+            } else {
+                alert('GPS를 지원하지 않습니다');
+            }
+        }
+		$('#geoLink').click(function(e){
+			e.preventDefault();
+			getLocation();
+		});
+		$('#input-email-search').keydown(function(e){
+			if(e.keyCode===13){
+				e.preventDefault();
+				$('#mailSendBtn').click();
+				
+			}
+		});
+		$('#mailSendBtn').click(function(){
+			$.ajax({
+                type: "POST",
+                url: "<c:url value='/user/passwdEmailSend' />",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                dataType: "text", //서버로부터 어떤 형식으로 받을지(생략가능)
+                data: $('#input-email-search').val(),
+                success: function (data) {
+                    console.log('통신성공!' + data);
 
+                  	if(data==="success"){
+                  		alert("비밀번호 변경 이메일이 발송되었습니다.")
+                  	} else{
+                  		alert('가입되지 않은 이메일입니다.')
+                  	}
+                },
+                error: function () {
+                    alert('통신에 실패했습니다. 관리자에게 문의하세요');
+                }
+            }); // 회원 위치정보 등록 비동기 처리 끝
+		});
+		
+		/// 다음 주소 api사용부분
+		
+		// 주소-좌표 변환 객체를 생성합니다
+		var geocoder = new kakao.maps.services.Geocoder();
 
+		let myNickChk = true;
+    	let passwdChk = false;
+        $('#info-password').keyup(function(){
+            if(!regExpPw.test($('#info-password').val())){
+                $('#info-password').css("background-color","pink");
+                passwdChk = false;
+            } else {
+                $('#info-password').css("background-color","skyblue");
+                passwdChk = true;
+            }
+            
+        });
+
+        $('#info-passwordchk').keyup(function(){
+            if($('#info-password').val() !== $('#info-passwordchk').val()){
+                $('#info-passwordchk').css("background-color","pink");
+            } else {
+                $('#info-passwordchk').css("background-color","skyblue");
+            }
+            
+        });
+
+        $('#infoChangeBtn').click(function(){
+            if(passwdChk === false){
+                alert('비밀번호는 숫자 영문 특수 포함 8자 이상으로 작성하셔야 합니다.');
+                return;
+            } else if($('#info-nick').val().length > 8){
+        		alert('닉네임은 최대 8자 입니다.');
+        		return;
+        	}
+
+            if(confirm('회원정보를 수정하시겠습니까?') === true){
+                if($('#info-nick').val() !== '${loginuser.memberNick}'){
+                	myNickChk = false;
+                } else{
+                	myNickChk = true;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "<c:url value='/user/modifyUser' />",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    dataType: "text", //서버로부터 어떤 형식으로 받을지(생략가능)
+                    data: JSON.stringify({
+                        "memberEmail": $('#info-email').val(),
+                        "memberNick": $('#info-nick').val(),
+                        "memberPasswd": $('#info-password').val(),
+                        "memberPhone": $('#info-phone').val(),
+                        "nickChk": myNickChk
+                    }),
+                    success: function (data) {
+                        console.log('통신성공!' + data);
+
+                        if(data==="success"){
+                            alert("회원정보변경을 성공적으로 마쳤습니다.");
+                            location.reload();
+                        } else if(data==="duplicate"){
+                            alert('이미 다른 닉네임이 존재합니다.');
+                        } 
+                    },
+                    error: function () {
+                        alert('통신에 실패했습니다. 관리자에게 문의하세요');
+                    }
+                }); // 회원 위치정보 등록 비동기 처리 끝
+            }
+
+        });
+        
+        $('#delUserBtn').click(function(){
+			if(confirm('정말로 탈퇴하시겠습니까?') === true){
+				$('#form-infoChange').attr('action','<c:url value="/user/delUser" />');
+				$('#form-infoChange').submit();
+			}
+        	
+        });
+        
+        
     </script>
+    <c:if test="${loginuser.memberLatitude != null }">
+    <script>
+    	
+    	var callback = function(result,status){
+    		console.log("result:"+result);
+    		console.log("status:"+status);
+    		
+    		var location = result[1].address_name;
+    		const locarr = location.split(" ");
+    		console.log(locarr[0],locarr[1]);
+	    	$('#centerAddr').html(locarr[0]+" "+locarr[1]);
+    		
+    	}
+    	geocoder.coord2RegionCode(${loginuser.memberLongitude}, ${loginuser.memberLatitude}, callback);
+    </script>
+    </c:if>
 </body>
 
 </html>

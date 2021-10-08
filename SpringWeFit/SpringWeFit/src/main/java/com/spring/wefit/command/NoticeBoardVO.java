@@ -1,11 +1,11 @@
 package com.spring.wefit.command;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
 
 @Getter
 @Setter
@@ -39,12 +39,15 @@ public class NoticeBoardVO {
 	private String nbTitle;
 	private String nbContent;
 	private String nbImage1;
-	private String nbRealimage1;
+	private String nbRealImage1;
 	private int nbLookCount;
 	private int nbImageCount;
 	private Date nbRegDate;
 	
 	
+	private String memberNick;
+	private int nbReplyCount;
+	private int nbReportCount;
 	
 	
 	

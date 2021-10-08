@@ -3,7 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
-	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
 		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
 
@@ -52,13 +54,13 @@
 	<!-- 위의 구현체 xml을 빈으로 등록하기 위해서는 타입이 필요하니까 인터페이스를 자동으로 스캔해서 빈으로 등록하기 위한 설정 -->
 	<!-- 스캔 명령은 빈 바깥에! -->
 	<mybatis-spring:scan base-package="com.spring.wefit.course.mapper"/>
-	<mybatis-spring:scan base-package="com.spring.wefit.user.mapper"/>
-	<mybatis-spring:scan base-package="com.spring.wefit.placeboard.mapper"/>
-  	<mybatis-spring:scan base-package="com.spring.wefit.market.mapper"/>
-  	<mybatis-spring:scan base-package="com.spring.wefit.dietboard.mapper"/>
-	<mybatis-spring:scan base-package="com.spring.wefit.test"/>
+  	<mybatis-spring:scan base-package="com.spring.wefit.diet.mapper"/>
 	<mybatis-spring:scan base-package="com.spring.wefit.free.mapper"/>
-  	
+  	<mybatis-spring:scan base-package="com.spring.wefit.market.mapper"/>
+	<mybatis-spring:scan base-package="com.spring.wefit.placeboard.mapper"/>
+	<mybatis-spring:scan base-package="com.spring.wefit.user.mapper"/>
+	<mybatis-spring:scan base-package="com.spring.wefit.test"/>
+  	<mybatis-spring:scan base-package="com.spring.wefit.noticeboard.mapper"/>
   	
 
 	

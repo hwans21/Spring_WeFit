@@ -1,5 +1,8 @@
 package com.spring.wefit;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -11,9 +14,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.spring.wefit.command.DietBoardVO;
-import com.spring.wefit.dietboard.mapper.IDietBoardMapper;
+import com.spring.wefit.command.FreeBoardVO;
+import com.spring.wefit.command.FreeReplyVO;
+import com.spring.wefit.free.mapper.IFreeBoardMapper;
+import com.spring.wefit.free.mapper.IFreeReplyMapper;
 import com.spring.wefit.test.ITestMapper;
 import com.spring.wefit.command.UserVO;
+import com.spring.wefit.commons.PageVO;
+import com.spring.wefit.diet.mapper.IDietBoardMapper;
 import com.spring.wefit.user.mapper.IUserMapper;
 
 import lombok.extern.log4j.Log4j;
@@ -25,11 +33,13 @@ import lombok.extern.log4j.Log4j;
 public class ConnectionTest {
 	
 	@Autowired
-	
 	private IUserMapper usermapper;
-	
+	@Autowired
 	private ITestMapper mapper;
-	
+	@Autowired
+	private IFreeBoardMapper freemapper;
+	@Autowired
+	private IFreeReplyMapper freereplymapper;
 	
 	
 	@Autowired
@@ -86,6 +96,101 @@ public class ConnectionTest {
 			vo.setMemberCode(UUID.randomUUID().toString().split("-")[0]);
 			System.out.println(vo.toString());
 			usermapper.join(vo);
+		}
+	}
+	
+	@Test
+	public void boardInsertTest() {
+		FreeBoardVO vo = new FreeBoardVO();
+		for(int i=1;i<30;i++) {
+			vo.setMemberNick("test");
+			vo.setFbTitle("[자유글]테스트 제목입니다."+i);
+			vo.setFbContent("테스트 내용입니다."+i);
+			vo.setFbLookCount(0);
+			vo.setFbImageCount(0);
+			System.out.println(vo.toString());
+			freemapper.regist(vo);
+		}
+		for(int i=1;i<30;i++) {
+			vo.setMemberNick("test");
+			vo.setFbTitle("[소식/정보]테스트 제목입니다."+i);
+			vo.setFbContent("테스트 내용입니다."+i);
+			vo.setFbLookCount(0);
+			vo.setFbImageCount(0);
+			System.out.println(vo.toString());
+			freemapper.regist(vo);
+		}
+		for(int i=1;i<30;i++) {
+			vo.setMemberNick("test");
+			vo.setFbTitle("[홍보]테스트 제목입니다."+i);
+			vo.setFbContent("테스트 내용입니다."+i);
+			vo.setFbLookCount(0);
+			vo.setFbImageCount(0);
+			System.out.println(vo.toString());
+			freemapper.regist(vo);
+		}
+		for(int i=1;i<30;i++) {
+			vo.setMemberNick("test");
+			vo.setFbTitle("[꿀팁]테스트 제목입니다."+i);
+			vo.setFbContent("테스트 내용입니다."+i);
+			vo.setFbLookCount(0);
+			vo.setFbImageCount(0);
+			System.out.println(vo.toString());
+			freemapper.regist(vo);
+		}
+		for(int i=1;i<30;i++) {
+			vo.setMemberNick("test");
+			vo.setFbTitle("[기타]테스트 제목입니다."+i);
+			vo.setFbContent("테스트 내용입니다."+i);
+			vo.setFbLookCount(0);
+			vo.setFbImageCount(0);
+			System.out.println(vo.toString());
+			freemapper.regist(vo);
+		}
+	}
+	
+	@Test
+	public void replyInsertTest() {
+		FreeReplyVO vo = new FreeReplyVO();
+		vo.setFbNum(377);
+		vo.setMemberNum(364);
+		for(int i=1; i<30;i++) {
+			vo.setFrContent("테스트 댓글입니다. "+i);
+			freereplymapper.regist(vo);
+		}
+	}
+	
+	@Test
+	public void replyTotal() {
+		System.out.println("댓글 개수"+freereplymapper.getTotal(377));
+	}
+	
+	@Test
+	public void replyModify() {
+		FreeReplyVO vo = new FreeReplyVO();
+		vo.setFrNum(3);
+		vo.setFrContent("수정 테스트입니다.");
+		freereplymapper.update(vo);
+	}
+	
+	@Test
+	public void replyDelete() {
+		freereplymapper.delete(28);
+	}
+	
+	@Test
+	public void replyList() {
+		PageVO vo = new PageVO();
+		vo.setPageNum(1);
+		vo.setCountPerPage(20);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("paging", vo);
+		map.put("fbNum", 377);
+		System.out.println(map.toString());
+		List<FreeReplyVO> list = freereplymapper.getList(map);
+		System.out.println(list.size());
+		for(FreeReplyVO reply : list) {
+			System.out.println(reply.toString());
 		}
 	}
 }

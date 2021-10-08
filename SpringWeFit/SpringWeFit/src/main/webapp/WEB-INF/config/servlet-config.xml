@@ -11,6 +11,9 @@
 	<annotation-driven />
 
 	<resources mapping="/resources/**" location="/resources/" />
+	<!-- 이미지 파일을 jsp에서 쉽게 쓰기위해 경로 매핑해놓기 -->
+	<resources mapping="/img/**" location="/resources/img" />
+	<resources mapping="/upload/**" location="file:///../upload/" />
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -19,7 +22,7 @@
 	</beans:bean>
 
 
-	<!-- 회원가입 메일 인증 -->
+	<!-- 메일 인증 -->
 	<beans:bean id="mailSender"	class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<beans:property name="host" value="smtp.gmail.com" />
 		<beans:property name="port" value="587" /><!-- 465 or 25 -->
@@ -38,6 +41,7 @@
 	<context:component-scan base-package="com.spring.wefit" />
 
 	
+	
 	<context:component-scan base-package="com.spring.*" />
 	
 		<!-- 파일 업로드 -->
@@ -52,6 +56,100 @@
 		<beans:property name="defaultEncoding" value="utf-8" />
 	
 	</beans:bean>
+	
+	
+	
+	<!-- 인터셉터 빈 따로 등록 -->
+	<beans:bean id="autoLogin" class="com.spring.wefit.commons.AutoLoginInterceptor" />
+	<beans:bean id="ManagerCheck" class="com.spring.wefit.commons.ManagerInteceptor" />
+	<beans:bean id="AuthCheck" class="com.spring.wefit.commons.AuthInterceptor" />
+	
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/**"/>
+			<beans:ref bean="autoLogin" />
+		</interceptor>
+		<interceptor>
+			<mapping path="/courseBoard/write"/>
+			<mapping path="/courseBoard/regist"/>
+			<mapping path="/courseBoard/modify"/>
+			<mapping path="/courseBoard/delete"/>
+			
+			<mapping path="/noticeBoard/noticeWrite"/>
+			<mapping path="/noticeBoard/noticeModify"/>
+			<mapping path="/noticeBoard/noticeDelete"/>
+			
+			<beans:ref bean="ManagerCheck" />
+		</interceptor>
+		<interceptor>
+			<mapping path="/courseBoard/write"/>
+			<mapping path="/courseBoard/regist"/>
+			<mapping path="/courseBoard/modify"/>
+			<mapping path="/courseBoard/delete"/>
+			<mapping path="/courseBoard/like"/>
+			<mapping path="/courseBoard/report"/>
+			
+			<mapping path="/courseReply/regist"/>
+			<mapping path="/courseReply/modify"/>
+			<mapping path="/courseReply/delete"/>
+			
+			<mapping path="/dietBoard/dietWrite"/>
+			<mapping path="/dietBoard/dietModify"/>
+			<mapping path="/dietBoard/dietDelete"/>
+			<mapping path="/dietBoard/dietLikely"/>
+			<mapping path="/dietBoard/dietReport"/>
+			
+			<mapping path="/dietReply/replyRegist"/>
+			<mapping path="/dietReply/dietReplyModify"/>
+			<mapping path="/dietReply/dietReplyDelete"/>
+			
+			<mapping path="/freeBoard/freeWrite"/>
+			<mapping path="/freeBoard/freeModify"/>
+			<mapping path="/freeBoard/freeDelete"/>
+			<mapping path="/freeBoard/freeLikely"/>
+			<mapping path="/freeBoard/freeReport"/>
+			
+			<mapping path="/freeReply/freeReplyRegist"/>
+			<mapping path="/freeReplyModify"/>
+			<mapping path="/freeReplyDelete"/>
+			
+			<mapping path="/marketBoard/market_write"/>
+			<mapping path="/marketBoard/regist"/>
+			<mapping path="/marketBoard/market_modify"/>
+			<mapping path="/marketBoard/update"/>
+			<mapping path="/marketBoard/delete"/>
+			<mapping path="/marketBoard/marketLikely"/>
+			<mapping path="/marketBoard/marketReport"/>
+			
+			<mapping path="/marketReply/regist"/>
+			<mapping path="/marketReply/modify"/>
+			<mapping path="/marketReply/delete"/>
+			
+			<mapping path="/noticeBoard/noticeWrite"/>
+			<mapping path="/noticeBoard/noticeModify"/>
+			<mapping path="/noticeBoard/noticeDelete"/>
+			<mapping path="/noticeBoard/noticeLikely"/>
+			<mapping path="/noticeBoard/noticeReport"/>
+			
+			<mapping path="/noticeReply/noticeReplyRegist"/>
+			<mapping path="/noticeReply/noticeReplyModify"/>
+			<mapping path="/noticeReply/noticeReplyDelete"/>
+			
+			<mapping path="/placeBoard/placeWrite"/>
+			<mapping path="/placeBoard/placeModify"/>
+			<mapping path="/placeBoard/placeDelete"/>
+			<mapping path="/placeBoard/placeLike"/>
+			<mapping path="/placeBoard/placeReport"/>
+			
+			<mapping path="/placeReply/replyRegist"/>
+			<mapping path="/placeReply/placeReplyModify"/>
+			<mapping path="/placeReply/placeReplyDelete"/>
+
+			<beans:ref bean="AuthCheck" />
+		</interceptor>
+	</interceptors>
+	
 	
 	
 	

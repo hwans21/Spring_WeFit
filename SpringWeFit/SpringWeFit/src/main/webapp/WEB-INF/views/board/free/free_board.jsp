@@ -1,7 +1,14 @@
 <%@page import="com.fasterxml.jackson.annotation.JsonInclude.Include"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<% pageContext.setAttribute("replaceChar", "\n"); %>
+<% pageContext.setAttribute("replaceChar1", "<"); %>
+<% pageContext.setAttribute("replaceChar2", ">"); %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,14 +34,15 @@
             top: 250px;
         }
        
-        .container {
-          font-family: "NanumGothic";
-        }
+        
 
         #title {
+       	margin-top: 20px;
+           margin-bottom: 20px;
           color: rgb(0, 173, 181);
           font-size: 45px;
           font-weight: bold;
+          text-align: left;
         }
 
         #all {
@@ -52,38 +60,28 @@
           color:rgb(0, 173, 181);
         }
         #btn-list {
-          margin-top: 15px;
-          margin-bottom: 25px;
+          margin-top: 60px;
+          margin-bottom: 10px;
         }
-        /* 서브 메뉴 */
-        .sub_menu {
-            
-            width: 100%;
-            background-color: rgb(0, 173, 181);
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        
+        .search-inline {
+        	margin-bottom:10px;
         }
-        .sub2 {
-            display: inline-block;
-            margin: 0 auto;
+        thead > tr > th:nth-child(2){
+        	
+		  	width: 600px;
         }
-
-        .sub2 > a:link, .sub2 > a:visited, .sub2 > a:active {
-            margin: 5px 35px;
-            font-size: 15px;
-            line-height: 50px;
-            text-decoration: none;
-            color: #fff;
+        #title{
+        	overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			width: 600px;
+			height: 20px;
         }
-
-        .sub2 a:hover { 
-            color: #fff;
-            font-weight: 600;
-        }
-        #sub_menu3 {
-            text-align: center;
-            box-sizing: border-box; /*중요*/
-        }
-      
+        
+      tbody th:hover{
+			cursor:pointer;
+		}
 
     </style>
 </head>
@@ -95,40 +93,46 @@
         <div class="row">
             <%@ include file="../../include/header.jsp" %>
         </div>
-        <div class="row">
-          <ul id="sub_menu3" class="sub_menu">
-            <li class="sub2"><a href="/FRONT/views/board/notice/notice_board.html">공지사항</a></li>
-            <li class="sub2"><a href="<c:url value="/freeBoard/List" />">자유게시판</a></li>
-            <li class="sub2"><a href="/FRONT/views/board/qna/qna_board.html">질문게시판</a></li>
-          </ul>
-        </div>
-   
+        
+   		<div class="container text-center">
         <div class="row">
                 
-          <div class="col-sm-5">
+          <div class="col-sm-5" align="left">
             <span id="title">자유게시판</span>
           </div>
-
-              <div class="col-sm-7">
-                  <div id="btn-list" class="row" align="right">
-                    <div class="btn-group text-center" role="group" aria-label="Basic outlined example">
-                      <button type="button" class="btn btn-info btn-active" id="all">전체</button>
-                      <button type="button" class="btn btn-info">자유글</button>
-                      <button type="button" class="btn btn-info">소식/정보</button>
-                      <button type="button" class="btn btn-info">홍보</button>
-                      <button type="button" class="btn btn-info">꿀팁</button>
-                      <button type="button" class="btn btn-info">기타</button>&nbsp;&nbsp;&nbsp;
-                    </div>
-                
-                    <input type="text" placeholder="Search">
-                  
-                    <button type="button" class="btn" aria-label="Left Align">
-                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                    </button>
-
-                  </div>
+            <div id="btn-list" class="row" align="right">
+              <div class="btn-group text-center" role="group" aria-label="Basic outlined example">
+                <button type="button" class="btn btn-info ${(param.condition=='') || (param.condition==null)? 'active':'' }" id="allBtn">전체</button>
+                <button type="button" class="btn btn-info ${param.condition=='[자유글]'? 'active':'' }" id="freeBtn">자유글</button>
+                <button type="button" class="btn btn-info ${param.condition=='[소식/정보]'? 'active':'' }" id="infoBtn">소식/정보</button>
+                <button type="button" class="btn btn-info ${param.condition=='[홍보]'? 'active':'' }" id="advertBtn">홍보</button>
+                <button type="button" class="btn btn-info ${param.condition=='[꿀팁]'? 'active':'' }" id="tipBtn">꿀팁</button>
+                <button type="button" class="btn btn-info ${param.condition=='[기타]'? 'active':'' }" id="etcBtn">기타</button>&nbsp;&nbsp;&nbsp;
               </div>
+            </div>
+              
+			<div class="form-inline search-inline pull-right">
+            	<select id="order" class="form-control col-sm-2" >
+              		<option value="date" ${pc.paging.order == 'date'? 'selected':'' }>최신순</option>
+              		<option value="view" ${pc.paging.order == 'view'? 'selected':'' }>조회수순</option>
+              		<option value="reply" ${pc.paging.order == 'reply'? 'selected':'' }>댓글수순</option>
+              		<option value="like" ${pc.paging.order == 'like'? 'selected':'' }>좋아요순</option>
+              		<c:if test="${loginuser.memberManagerYN=='YES' }">
+               			<option value="report" ${pc.paging.order == 'report'? 'selected':'' }>신고수순</option>
+              		</c:if>
+              		
+              	</select>
+	             <input id="search-input" type="text" placeholder="Search" class="form-control" value="${pc.paging.keyword }">
+	           
+	             <button type="button" class="btn" aria-label="Left Align" id="searchBtn">
+	               <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+	             </button>
+			
+			</div>
         </div>
+          
+
+        
 
             <div class="row margin-top-5">
                 <table class="table table-hover table-responsive">
@@ -140,16 +144,25 @@
                         <th scope="col" class="text-center">날짜</th>
                         <th scope="col" class="text-center">조회</th>
                       </tr>
-                    </thead>
+                    </thead>	
                     <tbody>
-                      <tr onclick="location.href='/FRONT/views/board/free/free_detail.html'">
-                        <th scope="col" class="text-center">23</th>
-                        <th scope="col">[자유글] 운동 많이 하고 계시나요?</th>
-                        <th scope="col" class="text-center">야옹이</th>
-                        <th scope="col" class="text-center">2021-09-02</th>
-                        <th scope="col" class="text-center">153</th>
-                    </tr>
+                    <c:if test="${fn:length(freeList) == 0 }">
+						 <tr>
+						 	<td colspan=5><p class="search-none">검색 결과가 없습니다.</p></td>
+					 	<tr>
+					</c:if>
+                    <c:forEach var="arr" items="${freeList }">
                     
+                      <tr ${(loginuser.memberManagerYN=="YES" && arr.fbReportCount > 0)? "style='background-color:red'":"" } onclick="location.href='<c:url value="/freeBoard/freeDetail?fbNum=${arr.fbNum }&pageNum=${pc.paging.pageNum}&keyword=${pc.paging.keyword }&condition=${pc.paging.condition }&category=${pc.paging.category }&order=${pc.paging.order }" />'">
+                        
+                        <th scope="col" class="text-center">${arr.fbNum }</th>
+                        <th scope="col" class="title">${fn:replace(fn:replace(fn:replace(arr.fbTitle,replaceChar2,"&gt;" ),replaceChar1,"&lt;"),replaceChar,"<br/>") }&nbsp;&nbsp;&nbsp;[${arr.fbReplyCount}]</th>
+                        <th scope="col" class="text-center">${arr.memberNick }</th>
+                        <th scope="col" class="text-center"><fmt:formatDate value="${arr.fbRegDate }" pattern="yyyy-MM-dd"/></th>
+                        <th scope="col" class="text-center">${arr.fbLookCount }</th>
+                      </tr>
+                    </c:forEach>
+                    <!-- 
                         <tr>
                           <th scope="col" class="text-center">23</th>
                           <th scope="col">[자유글] 운동 많이 하고 계시나요?</th>
@@ -205,26 +218,30 @@
                             <th scope="col" class="text-center">2021-09-02</th>
                             <th scope="col" class="text-center">153</th>
                         </tr>
-                        
+                        -->
                     </tbody>
                   </table>
             </div>
 
             <div class="row" align="right">
-                <button type="button" id="write" class="btn btn-outline-primary" onclick="location.href='<c:url value="/freeBoard/writePage"/>'"><b>글쓰기</b></button>
+                <button type="button" id="write" class="btn btn-outline-primary" onclick="location.href='<c:url value="/freeBoard/freeWrite" />'"><b>글쓰기</b></button>
              </div>
-
-
+			</div>
             <div class="row text-center">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
-                      <li class="page-item"><a class="page-link" href="#">Prev</a></li>
-                      <li class="page-item"><a class="page-link" href="#">1</a></li>
-                      <li class="page-item"><a class="page-link" href="#">2</a></li>
-                      <li class="page-item"><a class="page-link" href="#">3</a></li>
-                      <li class="page-item"><a class="page-link" href="#">4</a></li>
-                      <li class="page-item"><a class="page-link" href="#">5</a></li>
-                      <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                      <c:if test="${pc.prev }">
+	                    <li class="page-item"><a class="page-link" href="<c:url value='/freeBoard/?pageNum=${pc.beginPage-1 }&condition=${pc.paging.condition }&keyword=${pc.paging.keyword }&order=${pc.paging.order }' />">Prev</a></li>
+                      </c:if>
+                      
+                      <c:forEach var="page" begin="${pc.beginPage }" end="${pc.endPage }">
+                      	<li class="page-item ${page == pc.paging.pageNum? 'active':''}"><a class="page-link" href="<c:url value='/freeBoard/?pageNum=${page }&condition=${pc.paging.condition }&keyword=${pc.paging.keyword }&order=${pc.paging.order }' />">${page }</a></li>
+                      </c:forEach>
+               
+                      
+                      <c:if test="${pc.next }">
+	                    <li class="page-item"><a class="page-link" href="<c:url value='/freeBoard/?pageNum=${pc.endPage+1 }&condition=${pc.paging.condition }&keyword=${pc.paging.keyword }&order=${pc.paging.order }' />">Next</a></li>
+                      </c:if>
                     </ul>
                   </nav>
             </div> 
@@ -232,10 +249,44 @@
         <div class="row">
             <%@ include file="../../include/footer.jsp" %>
         </div>
-
+		
         
     </div>
-    
+    <script>
+	    if(window.location.pathname.indexOf("/noticeBoard") !== -1){
+			$('#subMenuNotice').css("font-size","18px").css("font-weight","700");
+		} else if(window.location.pathname.indexOf("/freeBoard") !== -1){
+			$('#subMenuFree').css("font-size","18px").css("font-weight","700");
+		}
+    	
+    	$('#allBtn').click(function(){
+    		location.href=`<c:url value="/freeBoard/?condition=&keyword=${pc.paging.keyword} " />`
+    	});
+    	$('#freeBtn').click(function(){
+    		location.href=`<c:url value="/freeBoard/?condition=[자유글]&keyword=${pc.paging.keyword} " />`
+    	});
+    	$('#infoBtn').click(function(){
+    		location.href=`<c:url value="/freeBoard/?condition=[소식/정보]&keyword=${pc.paging.keyword} " />`
+    	});
+    	$('#advertBtn').click(function(){
+    		location.href=`<c:url value="/freeBoard/?condition=[홍보]&keyword=${pc.paging.keyword} " />`
+    	});
+    	$('#tipBtn').click(function(){
+    		location.href=`<c:url value="/freeBoard/?condition=[꿀팁]&keyword=${pc.paging.keyword} " />`
+    	});
+    	$('#etcBtn').click(function(){
+    		location.href=`<c:url value="/freeBoard/?condition=[기타]&keyword=${pc.paging.keyword} " />`
+    	});
+    	$('#searchBtn').click(function(){
+    		location.href=`<c:url value="/freeBoard/?condition=${pc.paging.condition}&keyword="/>`+$('#search-input').val()+"&order="+$('#order').val();
+    	});
+    	$('#search-input').keyup(function(e){
+    		if(e.keyCode == 13) {
+	    		location.href=`<c:url value="/freeBoard/?condition=${pc.paging.condition}&keyword="/>`+$('#search-input').val()+"&order="+$('#order').val();
+    		}
+    	});
+    	
+    </script>
     
 </body>
 </html>

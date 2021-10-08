@@ -1,6 +1,6 @@
 package com.spring.wefit.command;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +32,9 @@ public class NoticeReplyVO {
 	private int nbNum;
 	private String nrContent;
 	private int memberNum;
-	private Date nrRegDate;
+	private Timestamp nrRegDate;
+	
+	private String memberNick;
 	
 	
 	
